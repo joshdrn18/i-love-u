@@ -20,7 +20,7 @@ h1{font-size:clamp(43px,8vw,68px);line-height:.99;letter-spacing:-.055em;font-we
 .letter-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;color:#99988f;font:9px/1.5 Arial,sans-serif;text-transform:uppercase;letter-spacing:.16em;margin-bottom:32px}
 .salutation{font-size:23px;font-weight:400;margin:0 0 21px}.copy{font-size:17px;line-height:1.95;color:#465047}.copy p{margin:0 0 17px}.copy p:last-child{margin-bottom:0}
 .signature{margin-top:31px;color:var(--green);font-size:26px;font-style:italic}.signature small{display:block;margin-top:9px;color:#929188;font:9px/1.5 Arial,sans-serif;letter-spacing:.17em;text-transform:uppercase;font-style:normal}
-.background-audio{position:fixed;width:1px;height:1px;left:-10px;top:-10px;overflow:hidden;opacity:0;pointer-events:none}.background-audio iframe{width:1px;height:1px;border:0}.closing{display:flex;justify-content:center;align-items:center;gap:10px;margin:34px 0 0;color:#7f8278;font:10px/1.6 Arial,sans-serif;letter-spacing:.04em;text-align:center}.closing svg{width:14px;height:14px;color:var(--rose);flex:none}
+.background-audio{position:fixed;width:200px;height:200px;left:-220px;top:0;overflow:hidden;opacity:0;pointer-events:none;z-index:-1}.background-audio iframe{width:200px;height:200px;border:0}.closing{display:flex;justify-content:center;align-items:center;gap:10px;margin:34px 0 0;color:#7f8278;font:10px/1.6 Arial,sans-serif;letter-spacing:.04em;text-align:center}.closing svg{width:14px;height:14px;color:var(--rose);flex:none}
 footer{text-align:center;margin-top:44px;color:#a09c91;font:9px/1.6 Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase}
 @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:520px){.shell{padding-top:25px}.topline{margin-bottom:43px}.copy{font-size:16px;line-height:1.9}.letter-meta{margin-bottom:25px}}
@@ -38,6 +38,61 @@ footer{text-align:center;margin-top:44px;color:#a09c91;font:9px/1.6 Arial,sans-s
 <p>Next time, even when I'm upset or don't know what to say, I'll try to communicate instead of shutting you out. I know saying that is easy; I want to show it through what I do.</p>
 <p>You matter to me. I'm sorry I made you feel otherwise.</p></div>
 <div class="signature">I'm sorry.<small>And I'm here when you're ready to talk.</small></div></div></article>
-<div class="background-audio" aria-hidden="true"><iframe src="https://www.youtube-nocookie.com/embed/vGJTaP6anOU?autoplay=1&controls=0&rel=0&playsinline=1" title="Background music" allow="autoplay; encrypted-media" tabindex="-1"></iframe></div>
+<div class="background-audio" aria-hidden="true"><div id="yt-player"></div></div>
 <div class="closing"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 20s-7-4.3-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.7-7 10-7 10Z" stroke="currentColor" stroke-width="1.3"/></svg><span>No pressure to reply right away. I just wanted you to know.</span></div>
-<footer>Made with honesty, not perfect words.</footer></main></body></html>
+<footer>Made with honesty, not perfect words.</footer></main>
+<script>
+(function () {
+  let player = null;
+  let playerReady = false;
+  let audioEnabled = false;
+
+  window.onYouTubeIframeAPIReady = function () {
+    player = new YT.Player("yt-player", {
+      width: "200",
+      height: "200",
+      videoId: "vGJTaP6anOU",
+      playerVars: {
+        autoplay: 1,
+        controls: 0,
+        disablekb: 1,
+        fs: 0,
+        playsinline: 1,
+        rel: 0
+      },
+      events: {
+        onReady: function (event) {
+          playerReady = true;
+          event.target.mute();
+          event.target.setVolume(80);
+          event.target.playVideo();
+          if (audioEnabled) {
+            event.target.unMute();
+            event.target.playVideo();
+          }
+        },
+        onAutoplayBlocked: function () {}
+      }
+    });
+  };
+
+  function turnMusicOn() {
+    if (audioEnabled) return;
+    audioEnabled = true;
+    if (playerReady && player) {
+      player.unMute();
+      player.setVolume(80);
+      player.playVideo();
+    }
+  }
+
+  document.addEventListener("pointerdown", turnMusicOn, { once: true, capture: true });
+  document.addEventListener("keydown", turnMusicOn, { once: true, capture: true });
+
+  const tag = document.createElement("script");
+  tag.src = "https://www.youtube.com/iframe_api";
+  tag.async = true;
+  document.head.appendChild(tag);
+})();
+</script>
+</body></html>
